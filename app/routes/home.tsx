@@ -26,14 +26,29 @@ export default function Home() {
     const loadResumes = async () => {
       setLoadingResumes(true);
 
-      const resumes = (await kv.list('resume:*', true)) as KVItem[];
-
-      const parsedResumes = resumes?.map((resume) => (
-          JSON.parse(resume.value) as Resume
-      ))
-
-      setResumes(parsedResumes || []);
-      setLoadingResumes(false);
+      try {
+          const resumes = (await kv.list('resume:*', true)) as KVItem[];
+          
+          if (resumes) {
+              const parsedResumes = resumes.map((resume) => {
+                  try {
+                      return JSON.parse(resume.value) as Resume;
+                  } catch (e) {
+                      console.error("Failed to parse resume JSON:", resume.key);
+                      return null;
+                  }
+              }).filter((r): r is Resume => r !== null);
+              
+              setResumes(parsedResumes);
+          } else {
+              setResumes([]);
+          }
+      } catch (e) {
+          console.error("Failed to load resumes", e);
+          setResumes([]);
+      } finally {
+          setLoadingResumes(false);
+      }
     }
 
     loadResumes()

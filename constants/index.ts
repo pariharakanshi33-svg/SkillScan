@@ -239,3 +239,14 @@ export const prepareInstructions = ({jobTitle, jobDescription}: { jobTitle: stri
       ${AIResponseFormat}
       Return the analysis as an JSON object, without any other text and without the backticks.
       Do not include any other text or comments.`;
+
+export const SCORE_THRESHOLDS = {
+    STRONG: 70,
+    MODERATE: 50,
+} as const;
+
+export const getScoreLevel = (score: number) =>
+    score > SCORE_THRESHOLDS.STRONG ? 'strong'
+    : score > SCORE_THRESHOLDS.MODERATE ? 'moderate'
+    : 'weak';
+

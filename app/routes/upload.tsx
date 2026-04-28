@@ -56,12 +56,21 @@ const Upload = () => {
             ? feedback.message.content
             : feedback.message.content[0].text;
 
+        let parsedFeedback;
+        try {
+            parsedFeedback = JSON.parse(feedbackText);
+        } catch (error) {
+            setStatusText('Error: AI returned invalid response. Please try again.');
+            setIsProcessing(false);
+            return;
+        }
+
         const data = {
             id: uuid,
             resumePath: uploadedFile.path,
             imagePath: imagePath,
             companyName, jobTitle, jobDescription,
-            feedback: JSON.parse(feedbackText),
+            feedback: parsedFeedback,
         }
 
         await kv.set(`resume:${uuid}`, JSON.stringify(data));
@@ -75,11 +84,29 @@ const Upload = () => {
         if(!form) return;
         const formData = new FormData(form);
 
-        const companyName = formData.get('company-name') as string;
-        const jobTitle = formData.get('job-title') as string;
-        const jobDescription = formData.get('job-description') as string;
+        const companyName = (formData.get('company-name') as string)?.trim();
+        const jobTitle = (formData.get('job-title') as string)?.trim();
+        const jobDescription = (formData.get('job-description') as string)?.trim();
 
-        if(!file) return;
+        if (!file) {
+            alert('Please select a resume file to upload.');
+            return;
+        }
+
+        if (companyName && companyName.length > 100) {
+            alert('Company Name is too long (max 100 characters).');
+            return;
+        }
+
+        if (jobTitle && jobTitle.length > 100) {
+            alert('Job Title is too long (max 100 characters).');
+            return;
+        }
+
+        if (jobDescription && jobDescription.length > 2000) {
+            alert('Job Description is too long (max 2000 characters).');
+            return;
+        }
 
         handleAnalyze({ companyName, jobTitle, jobDescription, file });
     }

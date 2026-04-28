@@ -1,9 +1,10 @@
 import ScoreGauge from "~/components/ScoreGauge";
 import ScoreBadge from "~/components/ScoreBadge";
+import { SCORE_THRESHOLDS } from "../../constants";
 
 const Category = ({ title, score }: { title: string, score: number }) => {
-    const textColor = score > 70 ? 'text-green-600'
-            : score > 49
+    const textColor = score > SCORE_THRESHOLDS.STRONG ? 'text-green-600'
+            : score > SCORE_THRESHOLDS.MODERATE
         ? 'text-yellow-600' : 'text-red-600';
 
     return (

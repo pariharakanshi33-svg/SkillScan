@@ -24,30 +24,41 @@ const Resume = () => {
     }, [isLoading])
 
     useEffect(() => {
+        let pdfUrl: string;
+        let imgUrl: string;
         const loadResume = async () => {
             const resume = await kv.get(`resume:${id}`);
 
             if(!resume) return;
 
-            const data = JSON.parse(resume);
+            let data;
+            try {
+                data = JSON.parse(resume);
+            } catch (e) {
+                console.error("Failed to parse resume JSON", e);
+                return;
+            }
 
             const resumeBlob = await fs.read(data.resumePath);
             if(!resumeBlob) return;
 
             const pdfBlob = new Blob([resumeBlob], { type: 'application/pdf' });
-            const resumeUrl = URL.createObjectURL(pdfBlob);
-            setResumeUrl(resumeUrl);
+            pdfUrl = URL.createObjectURL(pdfBlob);
+            setResumeUrl(pdfUrl);
 
             const imageBlob = await fs.read(data.imagePath);
             if(!imageBlob) return;
-            const imageUrl = URL.createObjectURL(imageBlob);
-            setImageUrl(imageUrl);
+            imgUrl = URL.createObjectURL(imageBlob);
+            setImageUrl(imgUrl);
 
             setFeedback(data.feedback);
-            console.log({resumeUrl, imageUrl, feedback: data.feedback });
         }
 
         loadResume();
+        return () => {
+            if (pdfUrl) URL.revokeObjectURL(pdfUrl);
+            if (imgUrl) URL.revokeObjectURL(imgUrl);
+        };
     }, [id]);
 
     return (

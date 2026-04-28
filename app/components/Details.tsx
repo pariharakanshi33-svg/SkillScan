@@ -1,3 +1,4 @@
+import { SCORE_THRESHOLDS } from "../../constants";
 import { cn } from "~/lib/utils";
 import {
   Accordion,
@@ -6,29 +7,29 @@ import {
   AccordionItem,
 } from "./Accordion";
 
-const ScoreBadge = ({ score }: { score: number }) => {
+const DetailsScoreBadge = ({ score }: { score: number }) => {
   return (
       <div
           className={cn(
               "flex flex-row gap-1 items-center px-2 py-0.5 rounded-[96px]",
-              score > 69
+              score > SCORE_THRESHOLDS.STRONG
                   ? "bg-badge-green"
-                  : score > 39
+                  : score > SCORE_THRESHOLDS.MODERATE
                       ? "bg-badge-yellow"
                       : "bg-badge-red"
           )}
       >
         <img
-            src={score > 69 ? "/icons/check.svg" : "/icons/warning.svg"}
+            src={score > SCORE_THRESHOLDS.STRONG ? "/icons/check.svg" : "/icons/warning.svg"}
             alt="score"
             className="size-4"
         />
         <p
             className={cn(
                 "text-sm font-medium",
-                score > 69
+                score > SCORE_THRESHOLDS.STRONG
                     ? "text-badge-green-text"
-                    : score > 39
+                    : score > SCORE_THRESHOLDS.MODERATE
                         ? "text-badge-yellow-text"
                         : "text-badge-red-text"
             )}
@@ -38,6 +39,7 @@ const ScoreBadge = ({ score }: { score: number }) => {
       </div>
   );
 };
+
 
 const CategoryHeader = ({
                           title,
@@ -49,7 +51,7 @@ const CategoryHeader = ({
   return (
       <div className="flex flex-row gap-4 items-center py-2">
         <p className="text-2xl font-semibold">{title}</p>
-        <ScoreBadge score={categoryScore} />
+        <DetailsScoreBadge score={categoryScore} />
       </div>
   );
 };
