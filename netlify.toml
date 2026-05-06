@@ -1,0 +1,12 @@
+[build]
+  command = "npm run build"
+  publish = "build/client"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+# SPA routing: redirect all 404s to index.html so React Router handles them
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
